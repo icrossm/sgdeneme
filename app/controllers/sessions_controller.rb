@@ -15,7 +15,7 @@ class SessionsController < ApplicationController
      @title:"Sign in"
      render 'new'
   else
-    #HAndle successful signin.
+    #
   end                                  
   end
   
