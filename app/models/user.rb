@@ -2,7 +2,9 @@ require 'digest'
 
 class User < ActiveRecord::Base  
   attr_accessor :password
-    attr_accessible :name, :email, :password, :password_confirmation
+  attr_accessible :name, :email, :password, :password_confirmation
+  
+  has_many :microposts, :dependent => :destroy 
 
   email_regex = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
 
@@ -17,7 +19,7 @@ class User < ActiveRecord::Base
 
 before_save :encrypt_password
 
- before_create :create_remember_token
+before_create :create_remember_token
 
  def User.new_remember_token
      SecureRandom.urlsafe_base64
@@ -68,6 +70,7 @@ def User.encrypt(token)
         end
 
 end
+
 # == Schema Information
 #
 # Table name: users
@@ -79,5 +82,7 @@ end
 #  updated_at         :datetime
 #  encrypted_password :string(255)
 #  salt               :string(255)
+#  remember_token     :string(255)
+#  admin              :boolean         default(FALSE)
 #
 
