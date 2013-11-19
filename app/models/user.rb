@@ -17,6 +17,12 @@ class User < ActiveRecord::Base
 
 before_save :encrypt_password
 
+ before_create :create_remember_token
+
+ def User.new_remember_token
+     SecureRandom.urlsafe_base64
+   end
+
 def has_password?(submitted_password) 
   encrypted_password == encrypt(submitted_password)  
 end 
@@ -34,7 +40,11 @@ def authenticate_with_salt(id, cookie_salt)
   (user && user.salt == cookie_salt) ? user : nil 
 end
 end
-
+def User.encrypt(token)
+    Digest::SHA1.hexdigest(token.to_s)
+  end
+  
+  
   private
 
      def encrypt_password
@@ -49,11 +59,13 @@ end
      def make_salt
        secure_hash("#{Time.now.utc}--#{password}")
      end
-
+     
      def secure_hash(string)
        Digest::SHA2.hexdigest(string)
      end
-     
+     def create_remember_token
+          self.remember_token = User.encrypt(User.new_remember_token)
+        end
 
 end
 # == Schema Information
